@@ -9,6 +9,16 @@ You can use Cloud Application Templates (CATs) in RightScale Self Service to aut
 
 ## Sample Policy CATs
 
+### Start / Stop Scheduler
+This CAT is a scheduler process that will start or stop VM instances based on a schedule managed within Self-Service and a special tag on the VM instance.  The tag on the VM instance is 'instance:schedule=<schedule name>'; e.g. 'instance:schedule=Business Hours'.  The scheduler will check to see if the current time is inside the schedule window, and if so, attempt to start instances that are not running.  If the current time is outside the schedule window, the scheduler will attempt to stop instances that are running.
+
+Unlike the schedules attached to a VM launched by RightScale, this process will work for instances created outside of RightScale without RightLink.
+
+To exclude an instance from the scheduler, the scheduler will look for exclude tags.  The examples show an exclude tag of 'instance:scheduler_exclude=true', but truly any tag could be used to exclude.  For example, you could exclude all tags for a specific environment as in: 'ec2:env=QA'.
+
+Finally, the Scheduler itself runs within the context of the user's timezone. So, the 'Business Hours' schedule would be in the context of the timezone of the person that launched the scheduler.  If that is not appropriate, the timezone can be overruled with a parameter in the launch; i.e. a European timezone could be chosen to override US-NewYork.
+
+Detailed logs are written to the Scheduler's Deployment audit log to verify that instances have been considered for starting or stopping and in fact the start / stop command was executed against specific instances within the context of a schedule.
 ### Unattached Volume Finder
 **What it does**
 
